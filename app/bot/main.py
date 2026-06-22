@@ -641,7 +641,12 @@ async def check_datacenters_job(context: ContextTypes.DEFAULT_TYPE) -> None:
                 changes.append(f"{name}: {old} → {new}")
 
         if changes:
-            msg = "🔔 HAX 数据中心变化提醒\n\n" + "\n".join(f"• {line}" for line in changes)
+            check_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            msg = (
+                f"🔔 HAX 数据中心变化提醒\n"
+                f"检测时间：{check_time}\n\n"
+                + "\n".join(f"• {line}" for line in changes)
+            )
             try:
                 await context.bot.send_message(chat_id=int(user_id), text=msg)
             except Forbidden:

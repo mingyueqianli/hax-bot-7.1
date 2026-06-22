@@ -51,6 +51,17 @@ def _is_total_name(name: str) -> bool:
     return any(k in low for k in TOTAL_KEYWORDS)
 
 
+IGNORE_CENTER_NAMES = {
+    "server statistics",
+    "statistics",
+    "stats",
+}
+
+
+def _is_ignored_center_name(name: str) -> bool:
+    return name.lower().replace("\u3000", " ").strip() in IGNORE_CENTER_NAMES
+
+
 def _extract_from_cards(soup: BeautifulSoup) -> tuple[dict[str, int], int | None]:
     centers: dict[str, int] = {}
     total: int | None = None
@@ -78,6 +89,8 @@ def _extract_from_cards(soup: BeautifulSoup) -> tuple[dict[str, int], int | None
         seen.add(key)
         if _is_total_name(name):
             total = count
+        elif _is_ignored_center_name(name):
+            continue
         elif len(name) <= 80:
             centers[name] = count
 
@@ -104,6 +117,8 @@ def _extract_from_text(soup: BeautifulSoup) -> tuple[dict[str, int], int | None]
                 continue
             if _is_total_name(line):
                 total = count
+            elif _is_ignored_center_name(name):
+                continue
             elif len(name) <= 80:
                 centers.setdefault(name, count)
     return centers, total
